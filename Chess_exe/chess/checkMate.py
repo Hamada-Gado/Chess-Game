@@ -1,5 +1,5 @@
 from .board import Board
-from .constants import BLACK, COLS, ROWS, WHITE
+from .constants import COLS, ROWS
 
 def _check_up(board, col, color, up, stop=-1):
     checks = {}

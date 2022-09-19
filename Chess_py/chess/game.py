@@ -97,12 +97,40 @@ class Game:
             return True
         return False
 
+    def flipBoard(self):
+        for i in range(len(self.board.board[:])//2):
+            self.board.board[i], self.board.board[-1-i] = self.board.board[-1-i], self.board.board[i]
+            for j in range(len(self.board.board[i][:])//2):
+                piece1 = self.board.board[i][j]
+                piece2 = self.board.board[i][-1-j]
+                piece3 = self.board.board[-1-i][j]
+                piece4 = self.board.board[-1-i][-1-j]
+                if piece1 != 0:
+                    piece1.row = len(self.board.board[i]) - 1 - piece1.row
+                    piece1.col = len(self.board.board[i]) - 1 - piece1.col
+                    piece1.calcPos()
+                if piece2 != 0:
+                    piece2.row = len(self.board.board[i]) - 1 - piece2.row
+                    piece2.col = len(self.board.board[i]) - 1 - piece2.col
+                    piece2.calcPos()
+                if piece3 != 0:
+                    piece3.row = len(self.board.board[i]) - 1 - piece3.row
+                    piece3.col = len(self.board.board[i]) - 1 - piece3.col
+                    piece3.calcPos()
+                if piece4 != 0:
+                    piece4.row = len(self.board.board[i]) - 1 - piece4.row
+                    piece4.col = len(self.board.board[i]) - 1 - piece4.col
+                    piece4.calcPos()
+                self.board.board[i][j], self.board.board[i][-1-j] = self.board.board[i][-1-j], self.board.board[i][j]
+                self.board.board[-1-i][j], self.board.board[-1-i][-1-j] = self.board.board[-1-i][-1-j], self.board.board[-1-i][j]
+
     def changeTurn(self):
         self.validMoves = {}
         if self.turn == WHITE:
             self.turn = BLACK
         else:
             self.turn = WHITE
+        self.flipBoard()
 
     def drawValidMoves(self, moves):
         for move, capture in moves.items():

@@ -197,21 +197,12 @@ class Board:
         right = col+1
 
         if piece.name == "PAWN":
-            if color == WHITE:
-                if piece.moved == 0:
-                    moves.update(self._traverse_up(col, color, up, 2))
-                else:
-                    moves.update(self._traverse_up(col, color, up, 1))
-                moves.update(self._traverse_left_diagonal_up(up, max(up-1, -1), color, left))
-                moves.update(self._traverse_right_diagonal_up(up, max(up-1, -1), color, right))
+            if piece.moved == 0:
+                moves.update(self._traverse_up(col, color, up, 2))
             else:
-                if piece.moved == 0:
-                    moves.update(self._traverse_down(col, color, down, 2))
-                else:
-                    moves.update(self._traverse_down(col, color, down, 1))
-                moves.update(self._traverse_left_diagonal_down(down, min(down+1, ROWS), color, left))
-                moves.update(self._traverse_right_diagonal_down(down, min(down+1, ROWS), color, right))
-            moves.update(self._check_en_passant(row, col, color))
+                moves.update(self._traverse_up(col, color, up, 1))
+            moves.update(self._traverse_left_diagonal_up(up, max(up-1, -1), color, left))
+            moves.update(self._traverse_right_diagonal_up(up, max(up-1, -1), color, right))
             
             for move in list(moves.keys()):
                 r, c = move
@@ -221,8 +212,6 @@ class Board:
                 if r != row and c == col:
                     if moves[move] != 0:
                         moves.pop(move)
-
-            
 
         elif piece.name == "KING":
             moves.update(self._check_castling(piece, row, col, color))

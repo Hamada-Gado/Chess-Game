@@ -41,4 +41,8 @@ class Piece:
         self.calcPos()
 
     def __repr__(self) -> str:
-        return self.name + "  " + str(self.color) + "  (" + str(self.row) + ", " + str(self.col) + ")"
+        if self.color == (0, 0, 0):
+            color = 'B'
+        else:
+            color = 'W'
+        return self.name + ' ' + color + " (" + str(self.row) + ", " + str(self.col) + ")"
