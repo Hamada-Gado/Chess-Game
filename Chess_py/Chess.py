@@ -31,7 +31,7 @@ def main():
                 break
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYUP and event.key == pygame.K_ESCAPE):
                 pygame.quit()
                 sys.exit()
 
