@@ -59,17 +59,23 @@ class Game:
                 self.selected = None
                 self.validMoves = {}
                 self.select(row, col)
+            else:
+                if self.selected != 0 and self.selected.name == "PAWN": self.selected = 0
+                else: self.selected = self.board.getPromotionPiece(row, col, self.turn)
+                self.validMoves = {}
+                self._promote()
 
-        if not self.promoting:
-            piece = self.board.getPiece(row, col)
-            if piece != 0 and piece.color == self.turn:
-                self.selected = piece
-                self.validMoves = self.board.getValidMoves(piece)
         else:
-            if self.selected != 0 and self.selected.name == "PAWN": self.selected = 0
-            else: self.selected = self.board.getPromotionPiece(row, col, self.turn)
-            self.validMoves = {}
-            self._promote()
+            if not self.promoting:
+                piece = self.board.getPiece(row, col)
+                if piece != 0 and piece.color == self.turn:
+                    self.selected = piece
+                    self.validMoves = self.board.getValidMoves(piece)
+            else:
+                if self.selected != 0 and self.selected.name == "PAWN": self.selected = 0
+                else: self.selected = self.board.getPromotionPiece(row, col, self.turn)
+                self.validMoves = {}
+                self._promote()
 
     def _move(self, row, col):
         if self.selected and not self.promoting and (row, col) in self.validMoves:

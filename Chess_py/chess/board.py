@@ -130,10 +130,16 @@ class Board:
             piece.move(row, col)
             if piece.name == "KING" and piece.moveLen[0] == 2:
                 rPiece = self.board[row][0]
-                self.move(rPiece, row, 3)
+                if piece.color == WHITE:
+                    self.move(rPiece, row, 3)
+                else:
+                    self.move(rPiece, row, 2)
             elif piece.name == "KING" and piece.moveLen[0] == -2:
                 rPiece = self.board[row][7]
-                self.move(rPiece, row, 5)
+                if piece.color == WHITE:
+                    self.move(rPiece, row, 5)
+                else:
+                    self.move(rPiece, row, 4)
 
     def getPromotionPiece(self, row, col, color):
         if color == BLACK: i = 0
@@ -203,6 +209,7 @@ class Board:
                 moves.update(self._traverse_up(col, color, up, 1))
             moves.update(self._traverse_left_diagonal_up(up, max(up-1, -1), color, left))
             moves.update(self._traverse_right_diagonal_up(up, max(up-1, -1), color, right))
+            moves.update(self._check_en_passant(row, col, color))
             
             for move in list(moves.keys()):
                 r, c = move
@@ -481,70 +488,69 @@ class Board:
         if col+1 < COLS:
             current = self.board[row][col+1]
             if current != 0 and self.lastMoved == current and abs(current.moveLen[1]) == 2 and current.name == "PAWN" and current.moved == 1 and current.color != color:
-                if color == WHITE:
-                    moves[(row-1, col+1)] = current
-                else:
-                    moves[(row+1, col+1)] = current
+                moves[(row-1, col+1)] = current
         
         if col-1 >= 0:
             current = self.board[row][col-1]
             if current != 0 and self.lastMoved == current and abs(current.moveLen[1]) == 2 and current.name == "PAWN" and current.moved == 1 and current.color != color:
-                if color == WHITE:
-                    moves[(row-1, col-1)] = current
-                else:
-                    moves[(row+1, col-1)] = current
+                moves[(row-1, col-1)] = current
 
         return moves
 
     def _check_castling(self, piece, row, col, color):
-        from .checkMate import notPossible
+        from .checkMate import notPossible, inCheck
         moves = {}
         king = self.board[row][col]
 
+        if inCheck(self, color) or king.moved != 0:
+            return moves
+
+        rookL = self.board[7][0]
+        rookR = self.board[7][7]
+
         if color == WHITE:
-            rook1 = self.board[7][0]
-            rook2 = self.board[7][7]
 
-            if king.moved == 0:
+            isEmpty = True
+            for i in range(1, 4):
+                if self.board[7][i] != 0:
+                    isEmpty = False
+                    break
 
-                isEmpty = True
-                for i in range(1, 4):
-                    if self.board[7][i] != 0:
-                        isEmpty = False
-                if rook1 != 0 and rook1.moved == 0 and isEmpty:
-                    if not notPossible(self.copy(), piece, (row, col-1),0,color):
-                        moves[(7, 2)] = 0
+            if rookL != 0 and rookL.moved == 0 and isEmpty:
+                if not notPossible(self.copy(), piece, (row, col-1),0,color):
+                    moves[(7, 2)] = 0
 
-                isEmpty = True
-                for i in range(5, 7):
-                    if self.board[7][i] != 0:
-                        isEmpty = False
-                if rook2 != 0 and rook2.moved == 0 and isEmpty: 
-                    if not notPossible(self.copy(), piece, (row, col+1),0,color):
-                        moves[(7, 6)] = 0
+            isEmpty = True
+            for i in range(5, 7):
+                if self.board[7][i] != 0:
+                    isEmpty = False
+                    break
 
+            if rookR != 0 and rookR.moved == 0 and isEmpty: 
+                if not notPossible(self.copy(), piece, (row, col+1),0,color):
+                    moves[(7, 6)] = 0
 
         else:
-            rook1 = self.board[0][0]
-            rook2 = self.board[0][7]
 
-            if king.moved == 0:
+            isEmpty = True
+            for i in range(1, 3):
+                if self.board[7][i] != 0:
+                    isEmpty = False
+                    break
 
-                isEmpty = True
-                for i in range(1, 4):
-                    if self.board[0][i] != 0:
-                        isEmpty = False
-                if rook1 != 0 and rook1.moved == 0 and isEmpty:
-                    if not notPossible(self.copy(), piece, (row, col-1),0,color):
-                        moves[(0, 2)] = 0
-                
-                isEmpty = True
-                for i in range(5, 7):
-                    if self.board[0][i] != 0:
-                        isEmpty = False
-                if rook2 != 0 and rook2.moved == 0 and isEmpty:
-                    if not notPossible(self.copy(), piece, (row, col+1),0,color):
-                        moves[(0, 6)] = 0
+            if rookL != 0 and rookL.moved == 0 and isEmpty:
+                if not notPossible(self.copy(), piece, (row, col-1),0,color):
+                    moves[(7, 1)] = 0
+            
+            isEmpty = True
+            for i in range(4, 7):
+                if self.board[7][i] != 0:
+                    isEmpty = False
+                    break
+
+            if rookR != 0 and rookR.moved == 0 and isEmpty:
+                if not notPossible(self.copy(), piece, (row, col+1),0,color):
+                    moves[(7, 5)] = 0
 
         return moves
 

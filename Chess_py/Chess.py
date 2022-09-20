@@ -1,5 +1,6 @@
 import pygame
 import sys
+from time import time
 from chess.constants import ICON, SQUARE_SIZE, WIDTH, HEIGHT
 from chess.game import Game
 
@@ -16,15 +17,18 @@ def get_row_col_from_mouse(pos):
     return row, col
 
 def main():
-    t = 333
+    start_time = None
     clock = pygame.time.Clock()
     game = Game(WIN)
 
-    while t:
+    while True:
         clock.tick(FPS)
 
         if game.winner:
-            t -= 1
+            if start_time == None:
+                start_time = time()
+            if time() - start_time > 5:
+                break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
