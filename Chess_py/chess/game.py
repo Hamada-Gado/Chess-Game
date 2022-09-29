@@ -17,13 +17,15 @@ class Game:
         self.winner = None
         self.state_text = None
         self.validMoves = {}
+        self.hints = {BLACK: True, WHITE: True}
     
     def reset(self):
         self._init()
 
     def update(self):
         self.board.drawBoard(self.win)
-        self.drawValidMoves(self.validMoves)
+        if self.hints[self.turn]:
+            self.drawValidMoves(self.validMoves)
         if self.promoting:
             self.board.drawChoices(self.win, self.promoting.row, self.promoting.col, self.turn)
         if self.winner:
