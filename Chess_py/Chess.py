@@ -41,8 +41,5 @@ def main():
 
         game.update()
 
-    main()
-
-
 if __name__ == "__main__":
     main()
